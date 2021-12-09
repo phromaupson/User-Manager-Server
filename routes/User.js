@@ -41,4 +41,27 @@ router.post(
     }
 );
 
+router.post("/login", (req, res) => {
+    User.findOne({ username: req.body.username }, (err, user) => {
+        if (err) return res.status(403).json(err);
+
+        if (user) {
+            bcrypt.compare(req.body.password, user.password, (err, result) => {
+                if (result) {
+                    user.password = undefined;
+                    return res.status(202).json({ data: user });
+                } else {
+                    return res
+                        .status(405)
+                        .json({ msg: "ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง", data: null });
+                }
+            });
+        } else {
+            return res
+                .status(405)
+                .json({ msg: "ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง", data: null });
+        }
+    });
+});
+
 module.exports = router;
