@@ -64,4 +64,19 @@ router.post("/login", (req, res) => {
     });
 });
 
+router.get("/all", (req, res) => {
+    User.find({}).then((value) => {
+        return res.json(value);
+    });
+});
+
+router.get("/show/:name", (req, res) => {
+    // console.log(req.params.name);
+    User.findOne({ username: req.params.name }, (err, result) => {
+        if (err) return res.json(err);
+
+        return res.json(result);
+    });
+});
+
 module.exports = router;
