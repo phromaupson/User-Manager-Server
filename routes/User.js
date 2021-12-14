@@ -2,6 +2,7 @@ const express = require("express");
 const router = express.Router();
 const bcrypt = require("bcrypt");
 const { body, validationResult } = require("express-validator");
+const jwt = require("jsonwebtoken");
 
 const User = require("../models/userModel");
 
@@ -47,13 +48,17 @@ router.post("/login", (req, res) => {
 
         if (user) {
             bcrypt.compare(req.body.password, user.password, (err, result) => {
-                if (result) {
+                if (err) {
+                    res
+                        .status(405)
+                        .json({ msg: "ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง", data: null });
                     user.password = undefined;
                     return res.status(202).json({ data: user });
                 } else {
-                    return res
-                        .status(405)
-                        .json({ msg: "ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง", data: null });
+                    user.password = undefined;
+
+                    const token = jwt.sign({ data: user }, "kamkon");
+                    return res.status(202).json({ data: user, token });
                 }
             });
         } else {
