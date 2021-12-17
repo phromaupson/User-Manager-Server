@@ -3,6 +3,7 @@ const router = express.Router();
 const bcrypt = require("bcrypt");
 const { body, validationResult } = require("express-validator");
 const jwt = require("jsonwebtoken");
+const { checkToken } = require("../middleware/checkToken");
 
 const User = require("../models/userModel");
 
@@ -69,8 +70,10 @@ router.post("/login", (req, res) => {
     });
 });
 
-router.get("/all", (req, res) => {
+router.get("/all", checkToken, (req, res) => {
     User.find({}).then((value) => {
+        // console.log(req.decoded);
+        const user = req.decoded;
         return res.json(value);
     });
 });
