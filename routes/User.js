@@ -49,12 +49,11 @@ router.post("/login", (req, res) => {
 
         if (user) {
             bcrypt.compare(req.body.password, user.password, (err, result) => {
-                if (err) {
+                if (!result) {
                     res
                         .status(405)
-                        .json({ msg: "ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง", data: null });
+                        .json({ msg: "Username and Password Invalid!", data: null });
                     user.password = undefined;
-                    return res.status(202).json({ data: user });
                 } else {
                     user.password = undefined;
 
@@ -65,7 +64,7 @@ router.post("/login", (req, res) => {
         } else {
             return res
                 .status(405)
-                .json({ msg: "ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง", data: null });
+                .json({ msg: "Username and Password Invalid!", data: null });
         }
     });
 });
